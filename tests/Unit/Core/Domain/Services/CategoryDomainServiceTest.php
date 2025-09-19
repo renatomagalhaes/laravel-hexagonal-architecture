@@ -383,4 +383,106 @@ class CategoryDomainServiceTest extends TestCase
         // Assert
         $this->assertFalse($result);
     }
+
+    /**
+     * Teste: Deve validar criação de categoria com nome único excluindo categoria específica
+     */
+    public function test_should_validate_category_creation_with_unique_name_excluding_specific(): void
+    {
+        // Arrange
+        $categoryName = 'Categoria Teste';
+        $excludeCategoryId = 'category_1';
+        $existingCategory = new Category($categoryName, 'Descrição', $excludeCategoryId);
+
+        $this->categoryRepository
+            ->expects($this->once())
+            ->method('findByName')
+            ->with($categoryName)
+            ->willReturn($existingCategory);
+
+        // Act
+        $result = $this->categoryDomainService->canCreateCategory($categoryName);
+
+        // Assert
+        $this->assertFalse($result);
+    }
+
+    /**
+     * Teste: Deve validar que categoria pode ser deletada quando não tem produtos
+     */
+    public function test_should_validate_category_can_be_deleted_when_no_products(): void
+    {
+        // Arrange
+        $categoryId = 'category_1';
+        $category = new Category('Categoria', 'Descrição', $categoryId);
+
+        $this->categoryRepository
+            ->expects($this->once())
+            ->method('findById')
+            ->with($categoryId)
+            ->willReturn($category);
+
+        // Act
+        $result = $this->categoryDomainService->canDeleteCategory($categoryId);
+
+        // Assert
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Teste: Deve validar criação de categoria excluindo categoria específica
+     */
+    public function test_should_validate_category_creation_excluding_specific_category(): void
+    {
+        // Arrange
+        $categoryName = 'Categoria Teste';
+        $excludeCategoryId = 'category_1';
+        $existingCategory = new Category($categoryName, 'Descrição', $excludeCategoryId);
+
+        $this->categoryRepository
+            ->expects($this->once())
+            ->method('findByName')
+            ->with($categoryName)
+            ->willReturn($existingCategory);
+
+        // Act
+        $result = $this->categoryDomainService->canCreateCategory($categoryName, $excludeCategoryId);
+
+        // Assert
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Teste: Deve validar que categoria pode ser deletada quando tem produtos (cenário de falha)
+     */
+    public function test_should_return_false_when_category_has_products_for_deletion(): void
+    {
+        // Arrange
+        $categoryId = 'category_1';
+        $category = new Category('Categoria', 'Descrição', $categoryId);
+
+        $this->categoryRepository
+            ->expects($this->once())
+            ->method('findById')
+            ->with($categoryId)
+            ->willReturn($category);
+
+        // Mock hasProducts to return true
+        $this->categoryDomainService = $this->getMockBuilder(CategoryDomainService::class)
+            ->setConstructorArgs([$this->categoryRepository])
+            ->onlyMethods(['hasProducts'])
+            ->getMock();
+
+        $this->categoryDomainService
+            ->expects($this->once())
+            ->method('hasProducts')
+            ->with($categoryId)
+            ->willReturn(true);
+
+        // Act
+        $result = $this->categoryDomainService->canDeleteCategory($categoryId);
+
+        // Assert
+        $this->assertFalse($result);
+    }
 }

@@ -47,11 +47,12 @@ class CategoryDomainService
      * Verifica se uma categoria pode ser criada
      * 
      * @param string $categoryName Nome da categoria
+     * @param string|null $excludeCategoryId ID da categoria a ser excluída da verificação
      * @return bool True se a categoria pode ser criada, false caso contrário
      */
-    public function canCreateCategory(string $categoryName): bool
+    public function canCreateCategory(string $categoryName, ?string $excludeCategoryId = null): bool
     {
-        return $this->isCategoryNameUnique($categoryName);
+        return $this->isCategoryNameUnique($categoryName, $excludeCategoryId);
     }
 
     /**
