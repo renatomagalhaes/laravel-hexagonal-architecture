@@ -165,4 +165,103 @@ class InMemoryProductRepositoryTest extends TestCase
             $this->assertEquals(2, $product->getCategoryId());
         }
     }
+
+    /**
+     * Teste: Deve atualizar um produto existente quando já tem ID
+     */
+    public function test_should_update_existing_product_when_it_has_id(): void
+    {
+        // Arrange
+        $originalProduct = new Product('Produto Original', 100.00, 1, 'Descrição original');
+        $savedProduct = $this->repository->save($originalProduct);
+        
+        // Modifica o produto salvo
+        $savedProduct->updateName('Produto Atualizado');
+        $savedProduct->updatePrice(150.00);
+
+        // Act
+        $updatedProduct = $this->repository->save($savedProduct);
+
+        // Assert
+        $this->assertSame($savedProduct, $updatedProduct);
+        $this->assertEquals('Produto Atualizado', $updatedProduct->getName());
+        $this->assertEquals(150.00, $updatedProduct->getPrice());
+        
+        // Verifica se foi realmente atualizado no repositório
+        $foundProduct = $this->repository->findById($savedProduct->getId());
+        $this->assertEquals('Produto Atualizado', $foundProduct->getName());
+        $this->assertEquals(150.00, $foundProduct->getPrice());
+    }
+
+    /**
+     * Teste: Deve manter o mesmo ID ao atualizar um produto existente
+     */
+    public function test_should_maintain_same_id_when_updating_existing_product(): void
+    {
+        // Arrange
+        $originalProduct = new Product('Produto Original', 100.00, 1, 'Descrição original');
+        $savedProduct = $this->repository->save($originalProduct);
+        $originalId = $savedProduct->getId();
+        
+        // Modifica o produto
+        $savedProduct->updateName('Produto Modificado');
+
+        // Act
+        $updatedProduct = $this->repository->save($savedProduct);
+
+        // Assert
+        $this->assertEquals($originalId, $updatedProduct->getId());
+        $this->assertCount(1, $this->repository->findAll());
+    }
+
+    /**
+     * Teste: Deve criar produto com ID específico quando fornecido
+     */
+    public function test_should_create_product_with_specific_id_when_provided(): void
+    {
+        // Arrange
+        $specificId = 'custom_product_123';
+        $product = new Product('Produto Custom', 100.00, 1, 'Descrição', $specificId);
+
+        // Act
+        $savedProduct = $this->repository->save($product);
+
+        // Assert
+        $this->assertEquals($specificId, $savedProduct->getId());
+        $this->assertSame($product, $savedProduct);
+        
+        // Verifica se foi salvo corretamente
+        $foundProduct = $this->repository->findById($specificId);
+        $this->assertSame($product, $foundProduct);
+    }
+
+    /**
+     * Teste: Deve gerar IDs únicos para produtos sem ID
+     */
+    public function test_should_generate_unique_ids_for_products_without_id(): void
+    {
+        // Arrange
+        $product1 = new Product('Produto 1', 100.00, 1, 'Descrição 1');
+        $product2 = new Product('Produto 2', 200.00, 1, 'Descrição 2');
+        $product3 = new Product('Produto 3', 300.00, 1, 'Descrição 3');
+
+        // Act
+        $saved1 = $this->repository->save($product1);
+        $saved2 = $this->repository->save($product2);
+        $saved3 = $this->repository->save($product3);
+
+        // Assert
+        $this->assertNotEmpty($saved1->getId());
+        $this->assertNotEmpty($saved2->getId());
+        $this->assertNotEmpty($saved3->getId());
+        
+        $this->assertNotEquals($saved1->getId(), $saved2->getId());
+        $this->assertNotEquals($saved2->getId(), $saved3->getId());
+        $this->assertNotEquals($saved1->getId(), $saved3->getId());
+        
+        // Verifica se os IDs começam com 'product_'
+        $this->assertStringStartsWith('product_', $saved1->getId());
+        $this->assertStringStartsWith('product_', $saved2->getId());
+        $this->assertStringStartsWith('product_', $saved3->getId());
+    }
 }

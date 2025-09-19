@@ -99,4 +99,37 @@ class PriceTest extends TestCase
         // Assert
         $this->assertEquals('R$ 1.299,99', $formatted);
     }
+
+    /**
+     * Teste: Deve converter para string corretamente
+     */
+    public function test_should_convert_to_string_correctly(): void
+    {
+        // Arrange
+        $priceValue = 1299.99;
+        $price = new Price($priceValue);
+
+        // Act
+        $stringValue = (string) $price;
+
+        // Assert
+        $this->assertEquals((string) $priceValue, $stringValue);
+    }
+
+    /**
+     * Teste: Deve converter para float corretamente
+     */
+    public function test_should_convert_to_float_correctly(): void
+    {
+        // Arrange
+        $priceValue = 1299.99;
+        $price = new Price($priceValue);
+
+        // Act
+        $floatValue = $price->__toFloat();
+
+        // Assert
+        $this->assertEquals($priceValue, $floatValue);
+        $this->assertIsFloat($floatValue);
+    }
 }

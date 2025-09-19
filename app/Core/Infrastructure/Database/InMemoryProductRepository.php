@@ -26,24 +26,9 @@ class InMemoryProductRepository implements ProductRepository
      */
     public function save(Product $product): Product
     {
-        // Se o produto já tem ID, atualiza; senão, cria novo
-        if ($product->getId()) {
-            $this->products[$product->getId()] = $product;
-            return $product;
-        }
-
-        // Gera novo ID e cria produto com ID
-        $id = 'product_' . $this->nextId++;
-        $productWithId = new Product(
-            $product->getName(),
-            $product->getPrice(),
-            $product->getCategoryId(),
-            $product->getDescription(),
-            $id
-        );
-
-        $this->products[$id] = $productWithId;
-        return $productWithId;
+        // Sempre salva o produto com seu ID (a entidade Product sempre gera um ID)
+        $this->products[$product->getId()] = $product;
+        return $product;
     }
 
     /**
