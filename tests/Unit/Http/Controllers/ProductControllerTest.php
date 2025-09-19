@@ -11,6 +11,7 @@ use App\Core\Application\UseCases\ListProductsUseCase;
 use App\Core\Application\UseCases\UpdateProductUseCase;
 use App\Core\Domain\Entities\Product;
 use App\Http\Controllers\ProductController;
+use App\Http\Requests\CreateProductRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use PHPUnit\Framework\TestCase;
@@ -63,7 +64,8 @@ class ProductControllerTest extends TestCase
             'description' => 'Smartphone com tela de 6.1 polegadas'
         ];
 
-        $request = new Request($requestData);
+        $request = new CreateProductRequest();
+        $request->merge($requestData);
         $expectedProduct = new Product(
             $requestData['name'],
             $requestData['price'],
@@ -111,7 +113,8 @@ class ProductControllerTest extends TestCase
             'description' => 'Descrição válida'
         ];
 
-        $request = new Request($requestData);
+        $request = new CreateProductRequest();
+        $request->merge($requestData);
 
         $this->createProductUseCase
             ->expects($this->once())
@@ -174,7 +177,8 @@ class ProductControllerTest extends TestCase
             'description' => 'Smartphone atualizado'
         ];
 
-        $request = new Request($requestData);
+        $request = new CreateProductRequest();
+        $request->merge($requestData);
         $updatedProduct = new Product(
             $requestData['name'],
             $requestData['price'],
@@ -222,7 +226,8 @@ class ProductControllerTest extends TestCase
             'description' => 'Descrição atualizada'
         ];
 
-        $request = new Request($requestData);
+        $request = new CreateProductRequest();
+        $request->merge($requestData);
 
         $this->updateProductUseCase
             ->expects($this->once())
@@ -361,7 +366,8 @@ class ProductControllerTest extends TestCase
             'description' => 'Descrição válida'
         ];
 
-        $request = new Request($requestData);
+        $request = new CreateProductRequest();
+        $request->merge($requestData);
 
         $this->createProductUseCase
             ->expects($this->once())
@@ -394,7 +400,8 @@ class ProductControllerTest extends TestCase
             'description' => 'Descrição atualizada'
         ];
 
-        $request = new Request($requestData);
+        $request = new CreateProductRequest();
+        $request->merge($requestData);
 
         $this->updateProductUseCase
             ->expects($this->once())

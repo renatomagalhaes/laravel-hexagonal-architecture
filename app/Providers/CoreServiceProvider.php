@@ -2,12 +2,15 @@
 
 namespace App\Providers;
 
+use App\Core\Application\UseCases\CreateCategoryUseCase;
 use App\Core\Application\UseCases\CreateProductUseCase;
 use App\Core\Application\UseCases\DeleteProductUseCase;
 use App\Core\Application\UseCases\FindProductsByCategoryUseCase;
 use App\Core\Application\UseCases\ListProductsUseCase;
 use App\Core\Application\UseCases\UpdateProductUseCase;
+use App\Core\Infrastructure\Database\InMemoryCategoryRepository;
 use App\Core\Infrastructure\Database\InMemoryProductRepository;
+use App\Core\Ports\Repositories\CategoryRepository;
 use App\Core\Ports\Repositories\ProductRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,8 +31,15 @@ class CoreServiceProvider extends ServiceProvider
     {
         // Registrar repositórios
         $this->app->bind(ProductRepository::class, InMemoryProductRepository::class);
+        $this->app->bind(CategoryRepository::class, InMemoryCategoryRepository::class);
 
         // Registrar Use Cases
+        $this->app->bind(CreateCategoryUseCase::class, function ($app) {
+            return new CreateCategoryUseCase(
+                $app->make(CategoryRepository::class)
+            );
+        });
+
         $this->app->bind(CreateProductUseCase::class, function ($app) {
             return new CreateProductUseCase(
                 $app->make(ProductRepository::class)

@@ -9,6 +9,7 @@ use App\Core\Application\UseCases\DeleteProductUseCase;
 use App\Core\Application\UseCases\FindProductsByCategoryUseCase;
 use App\Core\Application\UseCases\ListProductsUseCase;
 use App\Core\Application\UseCases\UpdateProductUseCase;
+use App\Http\Requests\CreateProductRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -56,10 +57,10 @@ class ProductController extends Controller
     /**
      * Cria um novo produto
      * 
-     * @param Request $request
+     * @param CreateProductRequest $request
      * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(CreateProductRequest $request): JsonResponse
     {
         try {
             $dto = new CreateProductDTO(
