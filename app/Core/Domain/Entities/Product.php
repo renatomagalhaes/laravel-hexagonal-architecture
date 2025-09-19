@@ -4,6 +4,7 @@ namespace App\Core\Domain\Entities;
 
 use App\Core\Domain\ValueObjects\ProductName;
 use App\Core\Domain\ValueObjects\Price;
+use App\Core\Domain\ValueObjects\CategoryId;
 
 /**
  * Entidade Product - Representa um produto no domínio da aplicação
@@ -19,7 +20,7 @@ class Product
     private string $id;
     private ProductName $name;
     private Price $price;
-    private int $categoryId;
+    private CategoryId $categoryId;
     private string $description;
     private \DateTime $createdAt;
     private \DateTime $updatedAt;
@@ -29,24 +30,24 @@ class Product
      * 
      * @param string $name Nome do produto
      * @param float $price Preço do produto
-     * @param int $categoryId ID da categoria
+     * @param string $categoryId ID da categoria
      * @param string $description Descrição do produto
      * @param string|null $id ID único (gerado automaticamente se não fornecido)
      */
     public function __construct(
         string $name,
         float $price,
-        int $categoryId,
+        string $categoryId,
         string $description,
         ?string $id = null
     ) {
         // Criação dos Value Objects (que já fazem as validações)
         $this->name = new ProductName($name);
         $this->price = new Price($price);
+        $this->categoryId = new CategoryId($categoryId);
 
         // Atribuição dos valores
         $this->id = $id ?? $this->generateId();
-        $this->categoryId = $categoryId;
         $this->description = $description;
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
@@ -87,6 +88,18 @@ class Product
         $this->updatedAt = new \DateTime();
     }
 
+    /**
+     * Atualiza a categoria do produto
+     * 
+     * @param string $categoryId
+     * @throws \InvalidArgumentException
+     */
+    public function updateCategory(string $categoryId): void
+    {
+        $this->categoryId = new CategoryId($categoryId);
+        $this->updatedAt = new \DateTime();
+    }
+
     // Getters
     public function getId(): string
     {
@@ -103,9 +116,9 @@ class Product
         return $this->price->getValue();
     }
 
-    public function getCategoryId(): int
+    public function getCategoryId(): string
     {
-        return $this->categoryId;
+        return $this->categoryId->getValue();
     }
 
     public function getDescription(): string

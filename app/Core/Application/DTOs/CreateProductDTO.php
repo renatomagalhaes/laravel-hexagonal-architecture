@@ -15,7 +15,7 @@ class CreateProductDTO
     public function __construct(
         public readonly string $name,
         public readonly float $price,
-        public readonly int $categoryId,
+        public readonly string $categoryId,
         public readonly string $description
     ) {
     }

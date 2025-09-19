@@ -26,7 +26,7 @@ class ProductTest extends TestCase
         // Arrange - Preparar os dados de teste
         $name = 'Smartphone Samsung Galaxy';
         $price = 1299.99;
-        $categoryId = 1;
+        $categoryId = 'category_1';
         $description = 'Smartphone com tela de 6.1 polegadas';
 
         // Act - Executar a ação (criar o produto)
@@ -52,7 +52,7 @@ class ProductTest extends TestCase
         // Arrange
         $emptyName = '';
         $price = 1299.99;
-        $categoryId = 1;
+        $categoryId = 'category_1';
         $description = 'Descrição válida';
 
         // Act & Assert
@@ -72,7 +72,7 @@ class ProductTest extends TestCase
         // Arrange
         $name = 'Produto válido';
         $negativePrice = -100.00;
-        $categoryId = 1;
+        $categoryId = 'category_1';
         $description = 'Descrição válida';
 
         // Act & Assert
@@ -128,12 +128,48 @@ class ProductTest extends TestCase
     public function test_should_throw_exception_when_updating_name_to_empty(): void
     {
         // Arrange
-        $product = new Product('Nome Válido', 100.00, 1, 'Descrição');
+        $product = new Product('Nome Válido', 100.00, 'category_1', 'Descrição');
 
         // Act & Assert
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Product name cannot be empty');
 
         $product->updateName('');
+    }
+
+    /**
+     * Teste: Deve permitir atualizar a categoria do produto
+     * 
+     * Testa o comportamento de atualização da categoria.
+     */
+    public function test_should_allow_updating_product_category(): void
+    {
+        // Arrange
+        $product = new Product('Produto', 100.00, 'category_1', 'Descrição');
+        $newCategoryId = 'category_2';
+
+        // Act
+        $product->updateCategory($newCategoryId);
+
+        // Assert
+        $this->assertEquals($newCategoryId, $product->getCategoryId());
+        $this->assertGreaterThan($product->getCreatedAt(), $product->getUpdatedAt());
+    }
+
+    /**
+     * Teste: Deve lançar exceção ao tentar atualizar categoria para vazio
+     * 
+     * Testa as validações nas operações de atualização de categoria.
+     */
+    public function test_should_throw_exception_when_updating_category_to_empty(): void
+    {
+        // Arrange
+        $product = new Product('Produto Válido', 100.00, 'category_1', 'Descrição válida');
+
+        // Act & Assert
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Category ID cannot be empty');
+
+        $product->updateCategory('');
     }
 }

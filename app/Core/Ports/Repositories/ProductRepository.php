@@ -52,8 +52,8 @@ interface ProductRepository
     /**
      * Busca produtos por categoria
      * 
-     * @param int $categoryId ID da categoria
+     * @param string $categoryId ID da categoria
      * @return array Lista de produtos da categoria
      */
-    public function findByCategoryId(int $categoryId): array;
+    public function findByCategoryId(string $categoryId): array;
 }

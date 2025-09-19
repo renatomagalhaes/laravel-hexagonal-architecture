@@ -42,7 +42,7 @@ class CreateProductUseCaseTest extends TestCase
         $dto = new CreateProductDTO(
             'Smartphone Samsung Galaxy',
             1299.99,
-            1,
+            'category_1',
             'Smartphone com tela de 6.1 polegadas'
         );
 
@@ -80,7 +80,7 @@ class CreateProductUseCaseTest extends TestCase
         $dto = new CreateProductDTO(
             '', // Nome vazio
             1299.99,
-            1,
+            'category_1',
             'Descrição válida'
         );
 
@@ -100,7 +100,7 @@ class CreateProductUseCaseTest extends TestCase
         $dto = new CreateProductDTO(
             'Produto válido',
             -100.00, // Preço negativo
-            1,
+            'category_1',
             'Descrição válida'
         );
 
@@ -120,7 +120,7 @@ class CreateProductUseCaseTest extends TestCase
         $dto = new CreateProductDTO(
             'Produto Teste',
             100.00,
-            1,
+            'category_1',
             'Descrição teste'
         );
 
@@ -152,7 +152,7 @@ class CreateProductUseCaseTest extends TestCase
         $dto = new CreateProductDTO(
             'Produto Teste',
             100.00,
-            1,
+            'category_1',
             'Descrição teste'
         );
 

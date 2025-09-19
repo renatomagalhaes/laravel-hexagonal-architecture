@@ -141,28 +141,28 @@ class InMemoryProductRepositoryTest extends TestCase
     public function test_should_find_products_by_category_id(): void
     {
         // Arrange
-        $product1 = new Product('Produto Categoria 1', 100.00, 1, 'Descrição 1');
-        $product2 = new Product('Produto Categoria 1', 200.00, 1, 'Descrição 2');
-        $product3 = new Product('Produto Categoria 2', 300.00, 2, 'Descrição 3');
+        $product1 = new Product('Produto Categoria 1', 100.00, 'category_1', 'Descrição 1');
+        $product2 = new Product('Produto Categoria 1', 200.00, 'category_1', 'Descrição 2');
+        $product3 = new Product('Produto Categoria 2', 300.00, 'category_2', 'Descrição 3');
         
         $this->repository->save($product1);
         $this->repository->save($product2);
         $this->repository->save($product3);
 
         // Act
-        $productsCategory1 = $this->repository->findByCategoryId(1);
-        $productsCategory2 = $this->repository->findByCategoryId(2);
+        $productsCategory1 = $this->repository->findByCategoryId('category_1');
+        $productsCategory2 = $this->repository->findByCategoryId('category_2');
 
         // Assert
         $this->assertCount(2, $productsCategory1);
         $this->assertCount(1, $productsCategory2);
         
         foreach ($productsCategory1 as $product) {
-            $this->assertEquals(1, $product->getCategoryId());
+            $this->assertEquals('category_1', $product->getCategoryId());
         }
         
         foreach ($productsCategory2 as $product) {
-            $this->assertEquals(2, $product->getCategoryId());
+            $this->assertEquals('category_2', $product->getCategoryId());
         }
     }
 
