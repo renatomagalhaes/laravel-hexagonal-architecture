@@ -24,13 +24,23 @@ class CategoryDomainService
      * Verifica se o nome da categoria é único
      * 
      * @param string $categoryName Nome da categoria
+     * @param string|null $excludeCategoryId ID da categoria a ser excluída da verificação
      * @return bool True se o nome for único, false caso contrário
      */
-    public function isCategoryNameUnique(string $categoryName): bool
+    public function isCategoryNameUnique(string $categoryName, ?string $excludeCategoryId = null): bool
     {
         $existingCategory = $this->categoryRepository->findByName($categoryName);
         
-        return $existingCategory === null;
+        if ($existingCategory === null) {
+            return true;
+        }
+
+        // Se foi especificado um ID para excluir, verifica se é o mesmo
+        if ($excludeCategoryId !== null && $existingCategory->getId() === $excludeCategoryId) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

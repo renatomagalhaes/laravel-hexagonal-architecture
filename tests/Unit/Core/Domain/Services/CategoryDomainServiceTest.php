@@ -337,4 +337,50 @@ class CategoryDomainServiceTest extends TestCase
         // Assert
         $this->assertFalse($result);
     }
+
+    /**
+     * Teste: Deve validar nome único excluindo categoria específica
+     */
+    public function test_should_validate_unique_name_excluding_specific_category(): void
+    {
+        // Arrange
+        $categoryName = 'Categoria Teste';
+        $excludeCategoryId = 'category_1';
+        $existingCategory = new Category($categoryName, 'Descrição', $excludeCategoryId);
+
+        $this->categoryRepository
+            ->expects($this->once())
+            ->method('findByName')
+            ->with($categoryName)
+            ->willReturn($existingCategory);
+
+        // Act
+        $result = $this->categoryDomainService->isCategoryNameUnique($categoryName, $excludeCategoryId);
+
+        // Assert
+        $this->assertTrue($result);
+    }
+
+    /**
+     * Teste: Deve retornar false quando nome existe para outra categoria
+     */
+    public function test_should_return_false_when_name_exists_for_different_category(): void
+    {
+        // Arrange
+        $categoryName = 'Categoria Teste';
+        $excludeCategoryId = 'category_1';
+        $existingCategory = new Category($categoryName, 'Descrição', 'category_2');
+
+        $this->categoryRepository
+            ->expects($this->once())
+            ->method('findByName')
+            ->with($categoryName)
+            ->willReturn($existingCategory);
+
+        // Act
+        $result = $this->categoryDomainService->isCategoryNameUnique($categoryName, $excludeCategoryId);
+
+        // Assert
+        $this->assertFalse($result);
+    }
 }

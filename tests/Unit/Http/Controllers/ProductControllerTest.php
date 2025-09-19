@@ -324,4 +324,170 @@ class ProductControllerTest extends TestCase
         $this->assertEquals($categoryId, $responseData['data'][0]['category_id']);
         $this->assertEquals($categoryId, $responseData['data'][1]['category_id']);
     }
+
+    /**
+     * Teste: Deve retornar erro 500 quando ocorre exceção genérica na listagem
+     */
+    public function test_should_return_500_when_generic_exception_in_list(): void
+    {
+        // Arrange
+        $this->listProductsUseCase
+            ->expects($this->once())
+            ->method('execute')
+            ->willThrowException(new \Exception('Database connection failed'));
+
+        // Act
+        $response = $this->productController->index();
+
+        // Assert
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(500, $response->getStatusCode());
+        
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertEquals('Database connection failed', $responseData['message']);
+    }
+
+    /**
+     * Teste: Deve retornar erro 500 quando ocorre exceção genérica na criação
+     */
+    public function test_should_return_500_when_generic_exception_in_creation(): void
+    {
+        // Arrange
+        $requestData = [
+            'name' => 'Produto Teste',
+            'price' => 100.00,
+            'category_id' => 'category_1',
+            'description' => 'Descrição válida'
+        ];
+
+        $request = new Request($requestData);
+
+        $this->createProductUseCase
+            ->expects($this->once())
+            ->method('execute')
+            ->willThrowException(new \Exception('Database connection failed'));
+
+        // Act
+        $response = $this->productController->store($request);
+
+        // Assert
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(500, $response->getStatusCode());
+        
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertEquals('Internal server error', $responseData['message']);
+    }
+
+    /**
+     * Teste: Deve retornar erro 500 quando ocorre exceção genérica na atualização
+     */
+    public function test_should_return_500_when_generic_exception_in_update(): void
+    {
+        // Arrange
+        $productId = 'product_123';
+        $requestData = [
+            'name' => 'Produto Atualizado',
+            'price' => 100.00,
+            'category_id' => 'category_1',
+            'description' => 'Descrição atualizada'
+        ];
+
+        $request = new Request($requestData);
+
+        $this->updateProductUseCase
+            ->expects($this->once())
+            ->method('execute')
+            ->willThrowException(new \Exception('Database connection failed'));
+
+        // Act
+        $response = $this->productController->update($request, $productId);
+
+        // Assert
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(500, $response->getStatusCode());
+        
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertEquals('Internal server error', $responseData['message']);
+    }
+
+    /**
+     * Teste: Deve retornar erro 500 quando ocorre exceção genérica na exclusão
+     */
+    public function test_should_return_500_when_generic_exception_in_deletion(): void
+    {
+        // Arrange
+        $productId = 'product_123';
+
+        $this->deleteProductUseCase
+            ->expects($this->once())
+            ->method('execute')
+            ->with($productId)
+            ->willThrowException(new \Exception('Database connection failed'));
+
+        // Act
+        $response = $this->productController->destroy($productId);
+
+        // Assert
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(500, $response->getStatusCode());
+        
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertEquals('Internal server error', $responseData['message']);
+    }
+
+    /**
+     * Teste: Deve retornar erro 500 quando ocorre exceção genérica na busca por categoria
+     */
+    public function test_should_return_500_when_generic_exception_in_find_by_category(): void
+    {
+        // Arrange
+        $categoryId = 'category_1';
+
+        $this->findProductsByCategoryUseCase
+            ->expects($this->once())
+            ->method('execute')
+            ->with($categoryId)
+            ->willThrowException(new \Exception('Database connection failed'));
+
+        // Act
+        $response = $this->productController->findByCategory($categoryId);
+
+        // Assert
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(500, $response->getStatusCode());
+        
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertEquals('Database connection failed', $responseData['message']);
+    }
+
+    /**
+     * Teste: Deve retornar erro 500 quando falha ao deletar produto
+     */
+    public function test_should_return_500_when_deletion_fails(): void
+    {
+        // Arrange
+        $productId = 'product_123';
+
+        $this->deleteProductUseCase
+            ->expects($this->once())
+            ->method('execute')
+            ->with($productId)
+            ->willReturn(false);
+
+        // Act
+        $response = $this->productController->destroy($productId);
+
+        // Assert
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(500, $response->getStatusCode());
+        
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertEquals('Failed to delete product', $responseData['message']);
+    }
 }
