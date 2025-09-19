@@ -60,6 +60,16 @@ class Price
     }
 
     /**
+     * Converte para float (método mágico)
+     * 
+     * @return float
+     */
+    public function __toString(): string
+    {
+        return (string) $this->value;
+    }
+
+    /**
      * Verifica se é igual a outro Price
      * 
      * @param Price $other

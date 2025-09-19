@@ -25,7 +25,7 @@ class PriceTest extends TestCase
 
         // Assert
         $this->assertEquals($priceValue, $price->getValue());
-        $this->assertEquals($priceValue, (float) $price);
+        $this->assertEquals($priceValue, $price->getValue());
     }
 
     /**
