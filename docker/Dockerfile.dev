@@ -1,0 +1,50 @@
+FROM php:8.3-fpm
+
+# Instalar dependências do sistema
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+
+# Instalar Xdebug para desenvolvimento (debug e coverage)
+RUN pecl install xdebug
+
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Instalar Node.js (versão mais recente)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+# Configurar diretório de trabalho
+WORKDIR /var/www/html
+
+# Copiar arquivos de configuração
+COPY docker/php/local.ini /usr/local/etc/php/conf.d/local.ini
+COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
+# Configurar permissões e usuário
+RUN groupadd -g 1000 www
+RUN useradd -u 1000 -ms /bin/bash -g www www
+
+# Copiar código da aplicação
+COPY --chown=www:www . /var/www/html
+
+# Configurar permissões do storage e bootstrap/cache
+RUN chown -R www:www /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Mudar para usuário www
+USER www
+
+# Expor porta
+EXPOSE 9000
+
+# Comando padrão
+CMD ["php-fpm"]
