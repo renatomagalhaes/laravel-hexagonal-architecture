@@ -100,6 +100,17 @@ class Product
         $this->updatedAt = new \DateTime();
     }
 
+    /**
+     * Atualiza a descrição do produto
+     * 
+     * @param string $description
+     */
+    public function updateDescription(string $description): void
+    {
+        $this->description = $description;
+        $this->updatedAt = new \DateTime();
+    }
+
     // Getters
     public function getId(): string
     {
