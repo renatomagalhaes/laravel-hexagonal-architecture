@@ -77,7 +77,7 @@ class ProductTest extends TestCase
 
         // Act & Assert
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Product price cannot be negative');
+        $this->expectExceptionMessage('Price cannot be negative');
 
         new Product($name, $negativePrice, $categoryId, $description);
     }
