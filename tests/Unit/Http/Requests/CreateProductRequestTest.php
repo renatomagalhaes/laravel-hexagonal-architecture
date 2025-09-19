@@ -228,4 +228,80 @@ class CreateProductRequestTest extends TestCase
         $this->assertTrue($validator->passes());
         $this->assertEmpty($validator->errors()->all());
     }
+
+    /**
+     * Teste: Deve retornar mensagens de erro personalizadas
+     */
+    public function test_should_return_custom_error_messages(): void
+    {
+        // Arrange
+        $request = new CreateProductRequest();
+        $messages = $request->messages();
+
+        // Act & Assert
+        $this->assertIsArray($messages);
+        $this->assertArrayHasKey('name.required', $messages);
+        $this->assertArrayHasKey('name.string', $messages);
+        $this->assertArrayHasKey('name.max', $messages);
+        $this->assertArrayHasKey('name.min', $messages);
+        $this->assertArrayHasKey('name.regex', $messages);
+        $this->assertArrayHasKey('price.required', $messages);
+        $this->assertArrayHasKey('price.numeric', $messages);
+        $this->assertArrayHasKey('price.min', $messages);
+        $this->assertArrayHasKey('category_id.required', $messages);
+        $this->assertArrayHasKey('category_id.string', $messages);
+        $this->assertArrayHasKey('category_id.min', $messages);
+        $this->assertArrayHasKey('description.string', $messages);
+        $this->assertArrayHasKey('description.max', $messages);
+
+        // Verificar se as mensagens estão em português
+        $this->assertEquals('O nome do produto é obrigatório.', $messages['name.required']);
+        $this->assertEquals('O nome do produto deve ser um texto.', $messages['name.string']);
+        $this->assertEquals('O nome do produto não pode ter mais de 255 caracteres.', $messages['name.max']);
+        $this->assertEquals('O nome do produto deve ter pelo menos 1 caractere.', $messages['name.min']);
+        $this->assertEquals('O nome do produto não pode começar ou terminar com espaços.', $messages['name.regex']);
+        $this->assertEquals('O preço do produto é obrigatório.', $messages['price.required']);
+        $this->assertEquals('O preço do produto deve ser um número.', $messages['price.numeric']);
+        $this->assertEquals('O preço do produto não pode ser negativo.', $messages['price.min']);
+        $this->assertEquals('O ID da categoria é obrigatório.', $messages['category_id.required']);
+        $this->assertEquals('O ID da categoria deve ser um texto.', $messages['category_id.string']);
+        $this->assertEquals('O ID da categoria deve ter pelo menos 1 caractere.', $messages['category_id.min']);
+        $this->assertEquals('A descrição deve ser um texto.', $messages['description.string']);
+        $this->assertEquals('A descrição não pode ter mais de 1000 caracteres.', $messages['description.max']);
+    }
+
+    /**
+     * Teste: Deve retornar atributos personalizados
+     */
+    public function test_should_return_custom_attributes(): void
+    {
+        // Arrange
+        $request = new CreateProductRequest();
+        $attributes = $request->attributes();
+
+        // Act & Assert
+        $this->assertIsArray($attributes);
+        $this->assertArrayHasKey('name', $attributes);
+        $this->assertArrayHasKey('price', $attributes);
+        $this->assertArrayHasKey('category_id', $attributes);
+        $this->assertArrayHasKey('description', $attributes);
+
+        // Verificar se os atributos estão em português
+        $this->assertEquals('nome do produto', $attributes['name']);
+        $this->assertEquals('preço', $attributes['price']);
+        $this->assertEquals('ID da categoria', $attributes['category_id']);
+        $this->assertEquals('descrição', $attributes['description']);
+    }
+
+    /**
+     * Teste: Deve autorizar requisição
+     */
+    public function test_should_authorize_request(): void
+    {
+        // Arrange
+        $request = new CreateProductRequest();
+
+        // Act & Assert
+        $this->assertTrue($request->authorize());
+    }
 }
