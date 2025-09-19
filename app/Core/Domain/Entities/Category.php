@@ -2,6 +2,8 @@
 
 namespace App\Core\Domain\Entities;
 
+use App\Core\Domain\ValueObjects\CategoryName;
+
 /**
  * Entidade Category - Representa uma categoria no domínio da aplicação
  * 
@@ -14,7 +16,7 @@ namespace App\Core\Domain\Entities;
 class Category
 {
     private string $id;
-    private string $name;
+    private CategoryName $name;
     private string $description;
     private bool $isActive;
     private \DateTime $createdAt;
@@ -32,36 +34,17 @@ class Category
         string $description,
         ?string $id = null
     ) {
-        // Validações de regras de negócio
-        $this->validateName($name);
+        // Criação do Value Object (que já faz as validações)
+        $this->name = new CategoryName($name);
 
         // Atribuição dos valores
         $this->id = $id ?? $this->generateId();
-        $this->name = trim($name);
         $this->description = $description;
         $this->isActive = true;
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
 
-    /**
-     * Valida o nome da categoria
-     * 
-     * @param string $name
-     * @throws \InvalidArgumentException
-     */
-    private function validateName(string $name): void
-    {
-        $trimmedName = trim($name);
-        
-        if (empty($trimmedName)) {
-            throw new \InvalidArgumentException('Category name cannot be empty');
-        }
-        
-        if (strlen($trimmedName) > 255) {
-            throw new \InvalidArgumentException('Category name cannot exceed 255 characters');
-        }
-    }
 
     /**
      * Gera um ID único para a categoria
@@ -81,8 +64,7 @@ class Category
      */
     public function updateName(string $name): void
     {
-        $this->validateName($name);
-        $this->name = trim($name);
+        $this->name = new CategoryName($name);
         $this->updatedAt = new \DateTime();
     }
 
@@ -123,7 +105,7 @@ class Category
 
     public function getName(): string
     {
-        return $this->name;
+        return $this->name->getValue();
     }
 
     public function getDescription(): string
