@@ -2,6 +2,9 @@
 
 namespace App\Core\Domain\Entities;
 
+use App\Core\Domain\ValueObjects\ProductName;
+use App\Core\Domain\ValueObjects\Price;
+
 /**
  * Entidade Product - Representa um produto no domínio da aplicação
  * 
@@ -14,8 +17,8 @@ namespace App\Core\Domain\Entities;
 class Product
 {
     private string $id;
-    private string $name;
-    private float $price;
+    private ProductName $name;
+    private Price $price;
     private int $categoryId;
     private string $description;
     private \DateTime $createdAt;
@@ -37,45 +40,18 @@ class Product
         string $description,
         ?string $id = null
     ) {
-        // Validações de regras de negócio
-        $this->validateName($name);
-        $this->validatePrice($price);
+        // Criação dos Value Objects (que já fazem as validações)
+        $this->name = new ProductName($name);
+        $this->price = new Price($price);
 
         // Atribuição dos valores
         $this->id = $id ?? $this->generateId();
-        $this->name = $name;
-        $this->price = $price;
         $this->categoryId = $categoryId;
         $this->description = $description;
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
 
-    /**
-     * Valida o nome do produto
-     * 
-     * @param string $name
-     * @throws \InvalidArgumentException
-     */
-    private function validateName(string $name): void
-    {
-        if (empty(trim($name))) {
-            throw new \InvalidArgumentException('Product name cannot be empty');
-        }
-    }
-
-    /**
-     * Valida o preço do produto
-     * 
-     * @param float $price
-     * @throws \InvalidArgumentException
-     */
-    private function validatePrice(float $price): void
-    {
-        if ($price < 0) {
-            throw new \InvalidArgumentException('Product price cannot be negative');
-        }
-    }
 
     /**
      * Gera um ID único para o produto
@@ -95,8 +71,7 @@ class Product
      */
     public function updateName(string $name): void
     {
-        $this->validateName($name);
-        $this->name = $name;
+        $this->name = new ProductName($name);
         $this->updatedAt = new \DateTime();
     }
 
@@ -108,8 +83,7 @@ class Product
      */
     public function updatePrice(float $price): void
     {
-        $this->validatePrice($price);
-        $this->price = $price;
+        $this->price = new Price($price);
         $this->updatedAt = new \DateTime();
     }
 
@@ -121,12 +95,12 @@ class Product
 
     public function getName(): string
     {
-        return $this->name;
+        return $this->name->getValue();
     }
 
     public function getPrice(): float
     {
-        return $this->price;
+        return $this->price->getValue();
     }
 
     public function getCategoryId(): int
